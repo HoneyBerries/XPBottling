@@ -50,9 +50,5 @@ If you encounter any bugs or have feature requests, please open an issue in the 
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
 
-## Acknowledgments
-
-- Built using the Bukkit API.
-- Inspired by the need for better XP management in Minecraft.
 
 Enjoy the plugin and happy bottling!
