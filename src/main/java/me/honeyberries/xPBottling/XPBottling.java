@@ -72,9 +72,6 @@ public final class XPBottling extends JavaPlugin implements Listener {
     private void processBottling(Player player, ItemStack bottle) {
         // Remove 12 XP points
         player.giveExp(-7);
-
-
-
         // Consume the bottle
         if (bottle.getAmount() > 1) {
             bottle.setAmount(bottle.getAmount() - 1);
