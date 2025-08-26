@@ -1,6 +1,6 @@
 name: XPBottling
 version: '1.0.0'
-main: me.honeyberries.xPBottling.XPBottling
+main: me.honeyberries.xpbottling.XPBottling
 api-version: '1.21'
 authors: [ HoneyBerries ]
 folia-supported: true
