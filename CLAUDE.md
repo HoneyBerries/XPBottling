@@ -14,7 +14,7 @@ XP Bottling is a Paper/Folia/Purpur plugin (Minecraft 26.3, Java 25). Right-clic
 ## Notes
 
 - `plugin.yml` is Maven-filtered, but `version` and `api-version` are set by hand. Keep its version in sync with `pom.xml`.
-- The XP check in `onPlayerInteract` (`getTotalExperience() < cost && getLevel() < 1`) is intentionally left as the author wrote it.
+- The XP cost comes from `config.yml` (`xp-cost`, read once in `onEnable`). The XP check uses `calculateTotalExperiencePoints()`, not `getTotalExperience()`, which is not reduced when XP is spent.
 
 ## Releases
 

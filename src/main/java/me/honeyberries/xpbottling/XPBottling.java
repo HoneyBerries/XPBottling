@@ -34,8 +34,10 @@ public final class XPBottling extends JavaPlugin implements Listener {
 
     /** Permission required to use the bottling interaction. */
     private static final String PERMISSION_USE = "xpbottling.use";
-    /** Flat experience point cost taken from the player for one bottle. */
-    private static final int EXPERIENCE_COST = 7;
+    /** Default experience point cost, used when the config value is missing or invalid. */
+    private static final int DEFAULT_EXPERIENCE_COST = 7;
+    /** Experience point cost taken from the player for one bottle (configurable via config.yml). */
+    private int experienceCost = DEFAULT_EXPERIENCE_COST;
     /** Message shown when the player lacks the required permission. */
     private static final Component NO_PERMISSION_MESSAGE = Component.text("You don't have permission to use XP Bottling!").color(NamedTextColor.RED);
     /** Message shown when the player lacks sufficient experience to bottle. */
@@ -52,6 +54,9 @@ public final class XPBottling extends JavaPlugin implements Listener {
      */
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+        experienceCost = Math.max(1, getConfig().getInt("xp-cost", DEFAULT_EXPERIENCE_COST));
+
         // Register events
         getServer().getPluginManager().registerEvents(this, this);
         getLogger().info("XP Bottling has been enabled!");
@@ -102,9 +107,9 @@ public final class XPBottling extends JavaPlugin implements Listener {
             return;
         }
 
-        // Check if the player has enough experience.
-        // The user requested to keep this logic as is.
-        if (player.getTotalExperience() < EXPERIENCE_COST && player.getLevel() < 1) {
+        // Check if the player has enough experience. getTotalExperience() is not reliable
+        // (it is not reduced when XP is spent, e.g. enchanting), so derive it from level and progress.
+        if (player.calculateTotalExperiencePoints() < experienceCost) {
             player.sendMessage(NOT_ENOUGH_XP_MESSAGE);
             return;
         }
@@ -125,10 +130,17 @@ public final class XPBottling extends JavaPlugin implements Listener {
      */
     private void processBottling(Player player) {
         // Remove the experience cost from the player.
-        player.giveExp(-EXPERIENCE_COST);
+        player.giveExp(-experienceCost);
 
-        // Give the player an experience bottle.
-        player.getInventory().addItem(new ItemStack(Material.EXPERIENCE_BOTTLE, 1));
+        // Consume one glass bottle from the main hand.
+        ItemStack held = player.getInventory().getItemInMainHand();
+        held.setAmount(held.getAmount() - 1);
+        player.getInventory().setItemInMainHand(held.getAmount() > 0 ? held : null);
+
+        // Give the player an experience bottle; drop it at their feet if the inventory is full.
+        player.getInventory().addItem(new ItemStack(Material.EXPERIENCE_BOTTLE, 1))
+                .values()
+                .forEach(leftover -> player.getWorld().dropItem(player.getLocation(), leftover));
 
         // Play a sound to indicate success.
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, SOUND_VOLUME, SOUND_PITCH);

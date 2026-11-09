@@ -11,7 +11,7 @@ Available on [Modrinth](https://modrinth.com/plugin/xp-bottling).
 
 1. Hold a glass bottle in your main hand.
 2. Right-click an enchanting table.
-3. The plugin takes **7 XP points**, consumes the glass bottle and gives you an experience bottle, with a sound effect.
+3. The plugin takes **7 XP points** (configurable), consumes the glass bottle and gives you an experience bottle, with a sound effect.
 
 7 XP is the average a thrown experience bottle gives back (it drops 3 to 11 points), so bottling is roughly lossless.
 
@@ -30,6 +30,14 @@ Players without the permission or without enough XP get a chat message instead. 
 | Permission | Default | Description |
 |------------|---------|-------------|
 | `xpbottling.use` | everyone | Bottle XP at an enchanting table |
+
+## Configuration
+
+`plugins/XPBottling/config.yml` is created on first start. Restart the server to apply changes.
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `xp-cost` | `7` | XP points taken per bottle (minimum 1) |
 
 ## Installation
 

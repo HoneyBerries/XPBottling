@@ -6,7 +6,7 @@
 
     <groupId>me.honeyberries</groupId>
     <artifactId>xp-bottling</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <name>xp-bottling</name>
