@@ -1,6 +1,9 @@
-# XP Bottling configuration. Restart the server to apply changes.
+# XP Bottling configuration. Apply changes with /xpbottling reload.
 
 # Experience points taken from the player for each bottle (minimum 1).
 # A thrown experience bottle gives 3-11 points (average 7), so values below 7
 # let players gain XP by recycling bottles.
 xp-cost: 7
+
+# Whether one glass bottle is consumed for each experience bottle you get.
+consume-bottle: true

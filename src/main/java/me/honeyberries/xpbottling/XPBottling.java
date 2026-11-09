@@ -1,5 +1,8 @@
 package me.honeyberries.xpbottling;
 
+import com.mojang.brigadier.Command;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -38,6 +41,10 @@ public final class XPBottling extends JavaPlugin implements Listener {
     private static final int DEFAULT_EXPERIENCE_COST = 7;
     /** Experience point cost taken from the player for one bottle (configurable via config.yml). */
     private int experienceCost = DEFAULT_EXPERIENCE_COST;
+    /** Whether one glass bottle is consumed per bottling (configurable via config.yml). */
+    private boolean consumeBottle = true;
+    /** Permission required to reload the configuration. */
+    private static final String PERMISSION_RELOAD = "xpbottling.reload";
     /** Message shown when the player lacks the required permission. */
     private static final Component NO_PERMISSION_MESSAGE = Component.text("You don't have permission to use XP Bottling!").color(NamedTextColor.RED);
     /** Message shown when the player lacks sufficient experience to bottle. */
@@ -55,11 +62,32 @@ public final class XPBottling extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        experienceCost = Math.max(1, getConfig().getInt("xp-cost", DEFAULT_EXPERIENCE_COST));
+        loadSettings();
+
+        // Register /xpbottling reload through Paper's Brigadier lifecycle API
+        getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event ->
+                event.registrar().register(
+                        Commands.literal("xpbottling")
+                                .requires(source -> source.getSender().hasPermission(PERMISSION_RELOAD))
+                                .then(Commands.literal("reload").executes(ctx -> {
+                                    reloadConfig();
+                                    loadSettings();
+                                    ctx.getSource().getSender().sendMessage(
+                                            Component.text("XP Bottling config reloaded.").color(NamedTextColor.GREEN));
+                                    return Command.SINGLE_SUCCESS;
+                                }))
+                                .build(),
+                        "Manage XP Bottling"));
 
         // Register events
         getServer().getPluginManager().registerEvents(this, this);
         getLogger().info("XP Bottling has been enabled!");
+    }
+
+    /** Reads the values from config.yml, falling back to defaults for missing or invalid entries. */
+    private void loadSettings() {
+        experienceCost = Math.max(1, getConfig().getInt("xp-cost", DEFAULT_EXPERIENCE_COST));
+        consumeBottle = getConfig().getBoolean("consume-bottle", true);
     }
 
     @Override
@@ -132,10 +160,12 @@ public final class XPBottling extends JavaPlugin implements Listener {
         // Remove the experience cost from the player.
         player.giveExp(-experienceCost);
 
-        // Consume one glass bottle from the main hand.
-        ItemStack held = player.getInventory().getItemInMainHand();
-        held.setAmount(held.getAmount() - 1);
-        player.getInventory().setItemInMainHand(held.getAmount() > 0 ? held : null);
+        // Consume one glass bottle from the main hand (if enabled).
+        if (consumeBottle) {
+            ItemStack held = player.getInventory().getItemInMainHand();
+            held.setAmount(held.getAmount() - 1);
+            player.getInventory().setItemInMainHand(held.getAmount() > 0 ? held : null);
+        }
 
         // Give the player an experience bottle; drop it at their feet if the inventory is full.
         player.getInventory().addItem(new ItemStack(Material.EXPERIENCE_BOTTLE, 1))

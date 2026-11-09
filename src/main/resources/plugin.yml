@@ -1,11 +1,14 @@
 name: XPBottling
-version: '1.1.1'
+version: '1.2.0'
 main: me.honeyberries.xpbottling.XPBottling
 api-version: '26.3'
 authors: [ HoneyBerries ]
 folia-supported: true
 description: Lets you store XP losslessly into a bottle
 permissions:
+  xpbottling.reload:
+    description: Allows reloading the XP Bottling config
+    default: op
   xpbottling.use:
     description: Allows the player to use XP Bottling
     default: true

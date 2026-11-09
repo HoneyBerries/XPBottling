@@ -14,7 +14,9 @@ XP Bottling is a Paper/Folia/Purpur plugin (Minecraft 26.3, Java 25). Right-clic
 ## Notes
 
 - `plugin.yml` is Maven-filtered, but `version` and `api-version` are set by hand. Keep its version in sync with `pom.xml`.
-- The XP cost comes from `config.yml` (`xp-cost`, read once in `onEnable`). The XP check uses `calculateTotalExperiencePoints()`, not `getTotalExperience()`, which is not reduced when XP is spent.
+- The XP cost comes from `config.yml` (`xp-cost`, `consume-bottle`, read by `loadSettings()` on enable and on `/xpbottling reload`). The XP check uses `calculateTotalExperiencePoints()`, not `getTotalExperience()`, which is not reduced when XP is spent.
+
+- `/xpbottling reload` is registered with Paper's Brigadier lifecycle API (`LifecycleEvents.COMMANDS`) in `onEnable`, not in `plugin.yml`; only its permission is declared there.
 
 ## Releases
 
