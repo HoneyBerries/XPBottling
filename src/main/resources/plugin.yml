@@ -1,7 +1,7 @@
 name: XPBottling
-version: '1.0.0'
+version: '1.1.0'
 main: me.honeyberries.xpbottling.XPBottling
-api-version: '1.21'
+api-version: '26.3'
 authors: [ HoneyBerries ]
 folia-supported: true
 description: Lets you store XP losslessly into a bottle
